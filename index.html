@@ -76,11 +76,33 @@ body{margin:0;min-height:100%;background:var(--fond);color:var(--texte);font:16p
 .jour.passe{background:transparent;color:rgba(255,255,255,.18);cursor:default}
 .jour.passe .m{color:rgba(255,255,255,.18)}
 .jour.ferme{background:transparent;border:1px dashed var(--trait);color:var(--doux)}
-.jour.aujourdhui::after{content:"";position:absolute;top:5px;right:6px;width:4px;height:4px;border-radius:50%;background:var(--or)}
+.jour.aujourdhui::after,.heure.nuit::after{content:"";position:absolute;top:5px;right:6px;width:4px;height:4px;border-radius:50%;background:var(--or)}
 .jour[aria-pressed="true"]{background:var(--texte);color:var(--fond)}
 .jour[aria-pressed="true"] .m{color:var(--fond)}
 .commentaire{margin:-4px 0 0;min-height:3em;color:var(--doux)}
 .commentaire b{color:var(--texte);font-weight:600}
+
+/* Heure : même boîte que le calendrier, un créneau par heure ; le point doré marque la nuit tombée (illuminations) */
+.heures{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.heure{appearance:none;position:relative;height:46px;padding:0;border:1px solid transparent;border-radius:9px;background:var(--surface-2);color:var(--texte);font:500 .98rem/1 var(--f-texte);font-variant-numeric:tabular-nums;cursor:pointer;touch-action:manipulation;transition:background .15s,color .15s}
+.heure:disabled{background:transparent;color:rgba(255,255,255,.18);cursor:default}
+.heure:disabled::after{opacity:.3}
+.heure[aria-pressed="true"]{background:var(--texte);color:var(--fond)}
+
+/* Fin : le bisou (pop, souffle, puis des cœurs qui s'envolent) */
+.bisou{appearance:none;position:relative;z-index:3;align-self:flex-start;width:max-content;margin:0 0 -6px;padding:0;border:0;background:none;color:inherit;font:4.4rem/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.bisou-emoji{display:block;transform-origin:50% 70%}
+.bisou.joue .bisou-emoji{animation:bisou-arrive .7s cubic-bezier(.3,1.5,.5,1) .15s both,bisou-souffle .6s ease-in-out .95s forwards}
+@keyframes bisou-arrive{from{transform:scale(0) rotate(-18deg)}to{transform:none}}
+@keyframes bisou-souffle{0%,100%{transform:none}35%{transform:scale(.9,1.07) rotate(-7deg)}65%{transform:scale(1.08) rotate(4deg)}}
+.bisou-coeur{position:absolute;left:70%;top:48%;width:22px;color:var(--coeur);pointer-events:none;opacity:0;animation:bisou-coeur 1.8s cubic-bezier(.2,.7,.3,1) var(--d) both}
+.bisou-coeur svg{display:block;width:100%;height:auto}
+@keyframes bisou-coeur{
+  0%{opacity:0;transform:translate(0,0) scale(.3)}
+  15%{opacity:1}
+  50%{transform:translate(calc(var(--dx) * .45 + var(--sx)),calc(var(--dy) * .5)) scale(calc(var(--s) * .85)) rotate(calc(var(--r) * .5))}
+  100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(var(--s)) rotate(var(--r))}
+}
 
 /* Fin */
 .date-finale{display:flex;flex-direction:column;gap:8px;padding:20px 0;border-top:1px solid var(--trait);border-bottom:1px solid var(--trait)}
@@ -172,11 +194,25 @@ body{margin:0;min-height:100%;background:var(--fond);color:var(--texte);font:16p
       <button class="btn btn-large" id="btn-valider" type="button" disabled>Choisis une date</button>
     </section>
 
-    <!-- 3. La réponse -->
+    <!-- 3. L'heure -->
+    <section class="ecran" id="e-heure" hidden>
+      <p class="surtitre">Presque fini</p>
+      <h2 class="titre">Et à quelle <em>heure</em>&#8239;?</h2>
+      <div class="cal">
+        <div class="cal-entete"><span class="cal-mois" id="heure-jour"></span><span class="cal-legende"><i></i>nuit tombée</span></div>
+        <div class="heures" id="heures" role="group" aria-label="Heures"></div>
+      </div>
+      <p class="commentaire" id="commentaire-heure" aria-live="polite">Touche une heure pour la choisir.</p>
+      <button class="btn btn-large" id="btn-valider-heure" type="button" disabled>Choisis une heure</button>
+      <button class="lien-discret" id="btn-retour-date" type="button">Changer de date</button>
+    </section>
+
+    <!-- 4. La réponse -->
     <section class="ecran" id="e-fin" hidden>
+      <button class="bisou" id="bisou" type="button" aria-label="Encore un bisou"><span class="bisou-emoji" aria-hidden="true">😘</span></button>
       <p class="surtitre">C'est noté</p>
       <h2 class="titre">À bientôt au <em>marché de Noël</em>.</h2>
-      <div class="date-finale"><small>Date choisie</small><strong id="date-finale"></strong></div>
+      <div class="date-finale"><small>Rendez-vous</small><strong id="date-finale"></strong></div>
       <div class="statut" id="statut" data-etat="envoi" role="status"><span class="indic" aria-hidden="true"></span><span id="statut-texte">Envoi de ta réponse…</span></div>
       <div class="secours" id="secours" hidden>
         <p class="texte">Ta réponse n'a pas pu partir toute seule. Envoie-la-moi avec un de ces boutons&nbsp;:</p>
@@ -185,7 +221,7 @@ body{margin:0;min-height:100%;background:var(--fond);color:var(--texte);font:16p
         <button class="btn btn-large btn-contour" id="btn-copier" type="button">Copier le message</button>
         <button class="btn btn-large btn-contour" id="btn-reessayer" type="button">Réessayer l'envoi automatique</button>
       </div>
-      <button class="lien-discret" id="btn-changer" type="button">Changer de date</button>
+      <button class="lien-discret" id="btn-changer" type="button">Changer la date ou l'heure</button>
     </section>
   </main>
 </div>
@@ -288,8 +324,10 @@ const CONFIG = {
     requestAnimationFrame(image);
   }
 
-  const etat = { etape: "question", date: null };
-  const ETIQUETTES = { question: "Question", date: "Date", fin: "Réponse" };
+  const etat = { etape: "question", date: null, heure: null };
+  const ETIQUETTES = { question: "Question", date: "Date", heure: "Heure", fin: "Réponse" };
+  const fmtHeure = h => `${h}${NB}h`;
+  const rendezVous = () => `${dateLongue(etat.date)} à ${fmtHeure(etat.heure)}`;
   const onShow = {};
 
   function aller(nom) {
@@ -415,27 +453,104 @@ const CONFIG = {
       grille.appendChild(b);
     }
   }
-  btnValider.addEventListener("click", () => { if (etat.date) aller("fin"); });
+  btnValider.addEventListener("click", () => { if (etat.date) aller("heure"); });
   onShow.date = () => {
     rendreCalendrier();
   };
 
-  /* ---------- 3. Envoi automatique de la réponse ---------- */
+  /* ---------- 3. L'heure ---------- */
+  const HEURES = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+  const NUIT = 17; // en décembre, il fait nuit vers 17 h : les illuminations sont allumées
+  const grilleHeures = $("#heures"), commentaireHeure = $("#commentaire-heure"), btnValiderHeure = $("#btn-valider-heure");
+  const motHeure = h => h < 12 ? "Le matin, il y a moins de monde."
+    : h < 14 ? "Parfait pour manger un bout au marché."
+    : h < NUIT ? "L'après-midi, avant la nuit."
+    : "Les illuminations seront allumées.";
+
+  function etatBoutonHeure() {
+    btnValiderHeure.disabled = etat.heure === null;
+    btnValiderHeure.textContent = etat.heure === null ? "Choisis une heure" : "Valider cette heure";
+  }
+  function choisirHeure(h) {
+    etat.heure = h;
+    $$(".heure:not(:disabled)", grilleHeures).forEach(b => b.setAttribute("aria-pressed", Number(b.dataset.h) === h ? "true" : "false"));
+    const gras = document.createElement("b");
+    gras.textContent = fmtHeure(h) + ".";
+    commentaireHeure.replaceChildren(gras, " " + typo(motHeure(h)));
+    vibrer(8);
+    etatBoutonHeure();
+  }
+  function rendreHeures() {
+    grilleHeures.replaceChildren();
+    $("#heure-jour").textContent = cap(dateLongue(etat.date));
+    // Pour aujourd'hui, seules les heures encore à venir restent possibles.
+    const now = new Date();
+    const memeJour = isoJour(etat.date) === isoJour(now);
+    const limite = memeJour ? now.getHours() : -1;
+    if (etat.heure !== null && etat.heure <= limite) etat.heure = null;
+    let libres = 0;
+    for (const h of HEURES) {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "heure" + (h >= NUIT ? " nuit" : ""); b.dataset.h = h;
+      b.textContent = fmtHeure(h);
+      if (h <= limite) {
+        b.disabled = true;
+        b.setAttribute("aria-label", `${fmtHeure(h)}, déjà passé`);
+      } else {
+        libres++;
+        b.setAttribute("aria-pressed", etat.heure === h ? "true" : "false");
+        b.setAttribute("aria-label", fmtHeure(h) + (h >= NUIT ? ", à la nuit tombée" : ""));
+        b.addEventListener("click", () => choisirHeure(h));
+      }
+      grilleHeures.appendChild(b);
+    }
+    if (etat.heure !== null) choisirHeure(etat.heure);
+    else commentaireHeure.textContent = typo(libres ? "Touche une heure pour la choisir." : "Il est trop tard pour aujourd'hui : choisis un autre jour.");
+    etatBoutonHeure();
+  }
+  btnValiderHeure.addEventListener("click", () => { if (etat.heure !== null) aller("fin"); });
+  $("#btn-retour-date").addEventListener("click", () => aller("date"));
+  onShow.heure = rendreHeures;
+
+  /* ---------- 4. Le bisou de la fin ---------- */
+  const bisou = $("#bisou");
+  const SVG_COEUR = '<svg viewBox="0 0 100 94" aria-hidden="true"><path fill="currentColor" d="M50 22C45 14 38 8 28 8 16 8 6 17 6 30c0 16 14 34 44 56 30-22 44-40 44-56 0-13-10-22-22-22-10 0-17 6-22 14Z"/></svg>';
+  function envoyerBisou() {
+    $$(".bisou-coeur", bisou).forEach(n => n.remove());
+    bisou.classList.remove("joue"); void bisou.offsetWidth; bisou.classList.add("joue");
+    if (MOUVEMENT_REDUIT) return;
+    for (let i = 0; i < 7; i++) {
+      const c = document.createElement("span");
+      c.className = "bisou-coeur";
+      c.innerHTML = SVG_COEUR;
+      c.style.setProperty("--d", (1.0 + i * 0.11).toFixed(2) + "s");
+      c.style.setProperty("--dx", Math.round(80 + Math.random() * 170) + "px");
+      c.style.setProperty("--dy", Math.round(-40 - Math.random() * 130) + "px");
+      c.style.setProperty("--sx", Math.round((Math.random() - 0.5) * 50) + "px");
+      c.style.setProperty("--s", (0.9 + Math.random() * 0.9).toFixed(2));
+      c.style.setProperty("--r", Math.round((Math.random() - 0.5) * 70) + "deg");
+      bisou.appendChild(c);
+    }
+    setTimeout(() => vibrer([10, 40, 10]), 1000);
+  }
+  bisou.addEventListener("click", envoyerBisou);
+
+  /* ---------- 5. Envoi automatique de la réponse ---------- */
   let envois = 0;
   function setStatut(e, txt) {
     $("#statut").dataset.etat = e;
     $("#statut-texte").textContent = typo(txt);
   }
   function messageSecours() {
-    let m = `Marché de Noël : c'est oui.\nLe ${dateLongue(etat.date)}.`;
+    let m = `Marché de Noël : c'est oui.\nLe ${rendezVous()}.`;
     if (fuites > 0) m += "\n(Et non, je n'ai pas réussi à cliquer sur « Non ».)";
     return typo(m);
   }
   async function envoyer() {
     setStatut("envoi", "Envoi de ta réponse…");
     $("#secours").hidden = true;
-    const titre = envois > 0 ? "Marché de Noël : nouvelle date" : "Marché de Noël : c'est oui";
-    const corps = typo(`Date choisie : ${cap(dateLongue(etat.date))}\nTentatives sur le bouton « Non » : ${fuites}`);
+    const titre = envois > 0 ? "Marché de Noël : nouveau rendez-vous" : "Marché de Noël : c'est oui";
+    const corps = typo(`Rendez-vous : ${cap(rendezVous())}\nTentatives sur le bouton « Non » : ${fuites}`);
     const params = new URLSearchParams({ title: titre, tags: "christmas_tree", priority: "high" });
     const ctrl = new AbortController();
     const minuteur = setTimeout(() => ctrl.abort(), 12000);
@@ -475,8 +590,9 @@ const CONFIG = {
   $("#btn-reessayer").addEventListener("click", envoyer);
   $("#btn-changer").addEventListener("click", () => aller("date"));
   onShow.fin = () => {
-    $("#date-finale").textContent = cap(dateLongue(etat.date));
+    $("#date-finale").textContent = cap(rendezVous());
     vibrer([20, 50, 20]);
+    envoyerBisou();
     envoyer();
   };
 
