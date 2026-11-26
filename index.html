@@ -232,7 +232,7 @@ body{margin:0;min-height:100%;background:var(--fond);color:var(--texte);font:16p
 const CONFIG = {
   elle: "Gwendoline",
   ntfy: "marche-noel-yyp5s1z0r0e3", // sujet ntfy auquel tu es abonné dans l'appli
-  whatsapp: ""                      // secours : ton numéro au format international sans +, ex. "33612345678"
+  whatsapp: "MzM2MTY1NDY4ODc="      // secours : ton numéro au format international sans +, encodé en base64 (btoa("336…")) pour ne pas être lu tel quel par les robots
 };
 
 (() => {
@@ -569,7 +569,8 @@ const CONFIG = {
       setStatut("erreur", "L'envoi automatique n'a pas fonctionné.");
       const msg = messageSecours();
       $("#message").textContent = msg;
-      const num = (CONFIG.whatsapp || "").replace(/\D/g, "");
+      let num = "";
+      try { num = atob(CONFIG.whatsapp || "").replace(/\D/g, ""); } catch (e) { /* numéro mal encodé : WhatsApp proposera de choisir le contact */ }
       $("#lien-wa").href = `https://wa.me/${num}?text=${encodeURIComponent(msg)}`;
       $("#secours").hidden = false;
     } finally {
