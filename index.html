@@ -89,13 +89,18 @@ body{margin:0;min-height:100%;background:var(--fond);color:var(--texte);font:16p
 .heure:disabled::after{opacity:.3}
 .heure[aria-pressed="true"]{background:var(--texte);color:var(--fond)}
 
-/* Fin : le bisou (pop, souffle, puis des cœurs qui s'envolent) */
-.bisou{appearance:none;position:relative;z-index:3;align-self:flex-start;width:max-content;margin:0 0 -6px;padding:0;border:0;background:none;color:inherit;font:4.4rem/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
-.bisou-emoji{display:block;transform-origin:50% 70%}
-.bisou.joue .bisou-emoji{animation:bisou-arrive .7s cubic-bezier(.3,1.5,.5,1) .15s both,bisou-souffle .6s ease-in-out .95s forwards}
+/* Fin : le bisou seul au centre ; il arrive, flotte, et souffle un bisou (des cœurs) toutes les 4 s.
+   Trois couches pour que chaque mouvement ait son propre transform : flotte > pop > emoji. */
+.bisou{appearance:none;position:relative;z-index:3;width:max-content;margin:0;padding:0;border:0;background:none;color:inherit;font:clamp(6rem,30vw,8rem)/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.bisou-flotte,.bisou-pop,.bisou-emoji{display:block}
+.bisou-emoji{transform-origin:50% 70%}
+.bisou.joue .bisou-pop{animation:bisou-arrive .8s cubic-bezier(.3,1.5,.5,1) .1s both}
+.bisou.joue .bisou-flotte{animation:bisou-flotte 3.2s ease-in-out .9s infinite}
+.bisou.souffle .bisou-emoji{animation:bisou-souffle .6s ease-in-out}
 @keyframes bisou-arrive{from{transform:scale(0) rotate(-18deg)}to{transform:none}}
+@keyframes bisou-flotte{50%{transform:translateY(-10px)}}
 @keyframes bisou-souffle{0%,100%{transform:none}35%{transform:scale(.9,1.07) rotate(-7deg)}65%{transform:scale(1.08) rotate(4deg)}}
-.bisou-coeur{position:absolute;left:70%;top:48%;width:22px;color:var(--coeur);pointer-events:none;opacity:0;animation:bisou-coeur 1.8s cubic-bezier(.2,.7,.3,1) var(--d) both}
+.bisou-coeur{position:absolute;left:74%;top:64%;width:26px;margin:-12px 0 0 -13px;color:var(--coeur);pointer-events:none;opacity:0;animation:bisou-coeur 1.8s cubic-bezier(.2,.7,.3,1) var(--d) both}
 .bisou-coeur svg{display:block;width:100%;height:auto}
 @keyframes bisou-coeur{
   0%{opacity:0;transform:translate(0,0) scale(.3)}
@@ -104,17 +109,12 @@ body{margin:0;min-height:100%;background:var(--fond);color:var(--texte);font:16p
   100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(var(--s)) rotate(var(--r))}
 }
 
-/* Fin */
-.date-finale{display:flex;flex-direction:column;gap:8px;padding:20px 0;border-top:1px solid var(--trait);border-bottom:1px solid var(--trait)}
-.date-finale small{font:600 .68rem/1 var(--f-texte);letter-spacing:.2em;text-transform:uppercase;color:var(--doux)}
-.date-finale strong{font:700 1.7rem/1.15 var(--f-texte);letter-spacing:-.02em}
-.statut{display:flex;align-items:center;gap:12px;font-weight:500}
-.statut .indic{flex:none;width:18px;height:18px;border-radius:50%;border:2px solid var(--trait-fort);border-top-color:var(--texte);animation:tourne .8s linear infinite}
-.statut[data-etat="ok"] .indic{animation:none;border:0;background:var(--or);display:grid;place-items:center}
-.statut[data-etat="ok"] .indic::after{content:"";width:8px;height:4px;margin-top:-2px;border-left:2px solid var(--fond);border-bottom:2px solid var(--fond);transform:rotate(-45deg)}
-.statut[data-etat="erreur"] .indic{animation:none;border:2px solid var(--alerte)}
-.statut[data-etat="erreur"]{color:var(--alerte)}
-@keyframes tourne{to{transform:rotate(360deg)}}
+/* Fin : écran sans texte (ni barre du haut), le bisou au milieu, le lien en bas. 68px = marges haut + bas de .app */
+#e-fin{padding-top:0;min-height:calc(100vh - 68px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));min-height:calc(100dvh - 68px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
+/* padding-top : compense le lien en bas et la marge basse de .app, pour que le bisou soit au milieu de l'écran */
+.fin-centre{flex:1;display:grid;place-items:center;padding-top:92px}
+#e-fin:has(#secours:not([hidden])) .fin-centre{padding-top:0}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .secours{display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid var(--trait);border-radius:14px;background:var(--surface)}
 .message{margin:0;padding:12px 14px;border-radius:10px;border:1px dashed var(--trait);background:var(--fond);color:var(--texte);font:400 .9rem/1.5 ui-monospace,"SF Mono",Menlo,monospace;white-space:pre-wrap;overflow-wrap:anywhere;user-select:text;-webkit-user-select:text}
 
@@ -207,13 +207,12 @@ body{margin:0;min-height:100%;background:var(--fond);color:var(--texte);font:16p
       <button class="lien-discret" id="btn-retour-date" type="button">Changer de date</button>
     </section>
 
-    <!-- 4. La réponse -->
+    <!-- 4. La réponse : seulement le bisou (le secours n'apparaît que si l'envoi échoue) -->
     <section class="ecran" id="e-fin" hidden>
-      <button class="bisou" id="bisou" type="button" aria-label="Encore un bisou"><span class="bisou-emoji" aria-hidden="true">😘</span></button>
-      <p class="surtitre">C'est noté</p>
-      <h2 class="titre">À bientôt au <em>marché de Noël</em>.</h2>
-      <div class="date-finale"><small>Rendez-vous</small><strong id="date-finale"></strong></div>
-      <div class="statut" id="statut" data-etat="envoi" role="status"><span class="indic" aria-hidden="true"></span><span id="statut-texte">Envoi de ta réponse…</span></div>
+      <div class="fin-centre">
+        <button class="bisou" id="bisou" type="button" aria-label="Encore un bisou"><span class="bisou-flotte"><span class="bisou-pop"><span class="bisou-emoji" aria-hidden="true">😘</span></span></span></button>
+      </div>
+      <div class="sr-only" id="statut" data-etat="envoi" role="status"><span id="statut-texte">Envoi de ta réponse…</span></div>
       <div class="secours" id="secours" hidden>
         <p class="texte">Ta réponse n'a pas pu partir toute seule. Envoie-la-moi avec un de ces boutons&nbsp;:</p>
         <pre class="message" id="message"></pre>
@@ -328,10 +327,12 @@ const CONFIG = {
   const ETIQUETTES = { question: "Question", date: "Date", heure: "Heure", fin: "Réponse" };
   const fmtHeure = h => `${h}${NB}h`;
   const rendezVous = () => `${dateLongue(etat.date)} à ${fmtHeure(etat.heure)}`;
-  const onShow = {};
+  const onShow = {}, onHide = {};
 
   function aller(nom) {
+    if (etat.etape !== nom && onHide[etat.etape]) onHide[etat.etape]();
     for (const e of $$(".ecran")) e.hidden = e.id !== "e-" + nom;
+    $(".entete").hidden = nom === "fin"; // l'écran final ne montre que le bisou
     const ecran = $("#e-" + nom);
     ecran.classList.remove("entre"); void ecran.offsetWidth; ecran.classList.add("entre");
     etat.etape = nom;
@@ -508,25 +509,35 @@ const CONFIG = {
   /* ---------- 4. Le bisou de la fin ---------- */
   const bisou = $("#bisou");
   const SVG_COEUR = '<svg viewBox="0 0 100 94" aria-hidden="true"><path fill="currentColor" d="M50 22C45 14 38 8 28 8 16 8 6 17 6 30c0 16 14 34 44 56 30-22 44-40 44-56 0-13-10-22-22-22-10 0-17 6-22 14Z"/></svg>';
-  function envoyerBisou() {
+  let minuteurBisou = 0;
+  function souffler(vibre) {
     $$(".bisou-coeur", bisou).forEach(n => n.remove());
-    bisou.classList.remove("joue"); void bisou.offsetWidth; bisou.classList.add("joue");
+    bisou.classList.remove("souffle"); void bisou.offsetWidth; bisou.classList.add("souffle");
+    if (vibre) vibrer([10, 40, 10]);
     if (MOUVEMENT_REDUIT) return;
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 8; i++) {
       const c = document.createElement("span");
       c.className = "bisou-coeur";
       c.innerHTML = SVG_COEUR;
-      c.style.setProperty("--d", (1.0 + i * 0.11).toFixed(2) + "s");
-      c.style.setProperty("--dx", Math.round(80 + Math.random() * 170) + "px");
-      c.style.setProperty("--dy", Math.round(-40 - Math.random() * 130) + "px");
+      c.style.setProperty("--d", (0.15 + i * 0.09).toFixed(2) + "s");
+      c.style.setProperty("--dx", Math.round(-90 + Math.random() * 240) + "px");
+      c.style.setProperty("--dy", Math.round(-90 - Math.random() * 150) + "px");
       c.style.setProperty("--sx", Math.round((Math.random() - 0.5) * 50) + "px");
       c.style.setProperty("--s", (0.9 + Math.random() * 0.9).toFixed(2));
       c.style.setProperty("--r", Math.round((Math.random() - 0.5) * 70) + "deg");
       bisou.appendChild(c);
     }
-    setTimeout(() => vibrer([10, 40, 10]), 1000);
   }
-  bisou.addEventListener("click", envoyerBisou);
+  function lancerBisou() {
+    clearTimeout(minuteurBisou);
+    $$(".bisou-coeur", bisou).forEach(n => n.remove());
+    bisou.classList.remove("joue", "souffle"); void bisou.offsetWidth; bisou.classList.add("joue");
+    if (MOUVEMENT_REDUIT) return;
+    const cycle = () => { souffler(false); minuteurBisou = setTimeout(cycle, 4000); };
+    minuteurBisou = setTimeout(cycle, 900);
+  }
+  bisou.addEventListener("click", () => souffler(true));
+  onHide.fin = () => clearTimeout(minuteurBisou);
 
   /* ---------- 5. Envoi automatique de la réponse ---------- */
   let envois = 0;
@@ -540,6 +551,7 @@ const CONFIG = {
     return typo(m);
   }
   async function envoyer() {
+    const reessai = !$("#secours").hidden;
     setStatut("envoi", "Envoi de ta réponse…");
     $("#secours").hidden = true;
     const titre = envois > 0 ? "Marché de Noël : nouveau rendez-vous" : "Marché de Noël : c'est oui";
@@ -552,6 +564,7 @@ const CONFIG = {
       if (!r.ok) throw new Error("HTTP " + r.status);
       envois++;
       setStatut("ok", "Ta réponse m'a été envoyée.");
+      if (reessai) toast("Ta réponse m'a été envoyée."); // seul cas où on l'écrit : après un échec
     } catch (e) {
       setStatut("erreur", "L'envoi automatique n'a pas fonctionné.");
       const msg = messageSecours();
@@ -583,9 +596,8 @@ const CONFIG = {
   $("#btn-reessayer").addEventListener("click", envoyer);
   $("#btn-changer").addEventListener("click", () => aller("date"));
   onShow.fin = () => {
-    $("#date-finale").textContent = cap(rendezVous());
     vibrer([20, 50, 20]);
-    envoyerBisou();
+    lancerBisou();
     envoyer();
   };
 
