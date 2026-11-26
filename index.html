@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0b0b0c">
+<title>Une question pour Gwendoline</title>
+<meta property="og:title" content="Une question pour Gwendoline">
+<meta property="og:description" content="Une seule question. Trente secondes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Mise en page : une colonne étroite (max 460px) sur fond noir, une seule couleur d'accent (or éteint) réservée aux mots clés. */
+:root{
+  --fond:#0b0b0c;
+  --surface:#151517;
+  --surface-2:#1d1d20;
+  --trait:rgba(255,255,255,.10);
+  --trait-fort:rgba(255,255,255,.24);
+  --texte:#f3f1ed;
+  --doux:#9b9893;
+  --or:#c9ad74;
+  --alerte:#e07a6a;
+  --coeur:#e5484d; /* réservé au cœur de l'intro */
+  --f-texte:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%;background:var(--fond)}
+body{margin:0;min-height:100%;background:var(--fond);color:var(--texte);font:16px/1.55 var(--f-texte);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overflow-x:hidden;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+.app{max-width:460px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));padding-block:20px 48px;display:flex;flex-direction:column}
+
+.entete{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--trait);font:600 .68rem/1 var(--f-texte);letter-spacing:.2em;text-transform:uppercase;color:var(--doux)}
+.entete .marque{display:flex;align-items:center;gap:9px}
+.entete .marque::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--or)}
+
+.ecran{display:flex;flex-direction:column;gap:20px;padding-top:36px}
+.ecran.entre{animation:entree .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes entree{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.surtitre{margin:0;font:600 .72rem/1 var(--f-texte);letter-spacing:.2em;text-transform:uppercase;color:var(--doux)}
+.titre{margin:0;font:700 clamp(1.9rem,8.4vw,2.4rem)/1.12 var(--f-texte);letter-spacing:-.025em;text-wrap:balance}
+.titre em{font-style:normal}
+.titre:focus{outline:none}
+.texte{margin:0;color:var(--doux);font-size:1rem;max-width:38ch}
+.sous-titre{margin:0;font:600 1.05rem/1.3 var(--f-texte)}
+
+.btn{appearance:none;border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 1rem/1 var(--f-texte);padding:17px 30px;border-radius:999px;background:var(--texte);color:var(--fond);text-decoration:none;white-space:nowrap;transition:transform .15s,opacity .2s,background .2s,color .2s;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.28;cursor:not-allowed;transform:none}
+.btn-contour{background:transparent;color:var(--texte);border-color:var(--trait-fort)}
+.btn-large{width:100%}
+:focus-visible{outline:2px solid var(--or);outline-offset:3px}
+.lien-discret{align-self:center;background:none;border:0;padding:10px;color:var(--doux);font:500 .92rem var(--f-texte);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+
+/* Question */
+.zone-reponse{position:relative;height:300px}
+.zone-reponse .btn{position:absolute;top:0;left:0;font-size:1.08rem;padding:18px 34px}
+#btn-oui{transform:scale(var(--echelle,1));transition:transform .35s cubic-bezier(.3,1.5,.5,1);z-index:2}
+.zone-reponse.prete #btn-oui{transition:transform .35s cubic-bezier(.3,1.5,.5,1),left .3s ease,top .3s ease}
+#btn-oui:active{transform:scale(calc(var(--echelle,1) * .97))}
+.zone-reponse.prete .btn-non{transition:left .3s cubic-bezier(.3,1.4,.5,1),top .3s cubic-bezier(.3,1.4,.5,1),background .2s,color .2s}
+
+/* Calendrier */
+.cal{display:flex;flex-direction:column;gap:10px;padding:16px;border:1px solid var(--trait);border-radius:14px;background:var(--surface)}
+.cal-entete{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.cal-mois{font:600 1.05rem/1 var(--f-texte)}
+.cal-legende{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--doux)}
+.cal-legende i{width:5px;height:5px;border-radius:50%;background:var(--or)}
+.cal-semaine,.cal-grille{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-semaine span{text-align:center;font:600 .66rem/1 var(--f-texte);letter-spacing:.12em;color:var(--doux);padding:2px 0}
+.jour{appearance:none;position:relative;height:44px;padding:0;border:1px solid transparent;border-radius:9px;background:var(--surface-2);color:var(--texte);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:500 .98rem/1 var(--f-texte);font-variant-numeric:tabular-nums;cursor:pointer;touch-action:manipulation;transition:background .15s,color .15s}
+.jour .m{font-size:.56rem;letter-spacing:.04em;color:var(--doux)}
+.jour.passe{background:transparent;color:rgba(255,255,255,.18);cursor:default}
+.jour.passe .m{color:rgba(255,255,255,.18)}
+.jour.ferme{background:transparent;border:1px dashed var(--trait);color:var(--doux)}
+.jour.aujourdhui::after{content:"";position:absolute;top:5px;right:6px;width:4px;height:4px;border-radius:50%;background:var(--or)}
+.jour[aria-pressed="true"]{background:var(--texte);color:var(--fond)}
+.jour[aria-pressed="true"] .m{color:var(--fond)}
+.commentaire{margin:-4px 0 0;min-height:3em;color:var(--doux)}
+.commentaire b{color:var(--texte);font-weight:600}
+
+/* Fin */
+.date-finale{display:flex;flex-direction:column;gap:8px;padding:20px 0;border-top:1px solid var(--trait);border-bottom:1px solid var(--trait)}
+.date-finale small{font:600 .68rem/1 var(--f-texte);letter-spacing:.2em;text-transform:uppercase;color:var(--doux)}
+.date-finale strong{font:700 1.7rem/1.15 var(--f-texte);letter-spacing:-.02em}
+.statut{display:flex;align-items:center;gap:12px;font-weight:500}
+.statut .indic{flex:none;width:18px;height:18px;border-radius:50%;border:2px solid var(--trait-fort);border-top-color:var(--texte);animation:tourne .8s linear infinite}
+.statut[data-etat="ok"] .indic{animation:none;border:0;background:var(--or);display:grid;place-items:center}
+.statut[data-etat="ok"] .indic::after{content:"";width:8px;height:4px;margin-top:-2px;border-left:2px solid var(--fond);border-bottom:2px solid var(--fond);transform:rotate(-45deg)}
+.statut[data-etat="erreur"] .indic{animation:none;border:2px solid var(--alerte)}
+.statut[data-etat="erreur"]{color:var(--alerte)}
+@keyframes tourne{to{transform:rotate(360deg)}}
+.secours{display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid var(--trait);border-radius:14px;background:var(--surface)}
+.message{margin:0;padding:12px 14px;border-radius:10px;border:1px dashed var(--trait);background:var(--fond);color:var(--texte);font:400 .9rem/1.5 ui-monospace,"SF Mono",Menlo,monospace;white-space:pre-wrap;overflow-wrap:anywhere;user-select:text;-webkit-user-select:text}
+
+/* Intro : le cœur se dessine (deux moitiés qui se rejoignent), se remplit, bat ; puis le prénom lettre par lettre */
+.intro{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:var(--fond);cursor:pointer;-webkit-user-select:none;user-select:none}
+.intro::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 44%,rgba(229,72,77,.15),transparent 55%);opacity:0;pointer-events:none}
+.intro.joue::before{animation:lueur 1.6s ease 1s both}
+@keyframes lueur{to{opacity:1}}
+.intro-contenu{position:relative;display:flex;flex-direction:column;align-items:center;gap:28px;transition:opacity .35s ease,transform .6s ease}
+.intro-coeur{width:104px;height:auto;overflow:visible;opacity:0;color:var(--coeur)}
+.intro.joue .intro-coeur{opacity:1;animation:bat .9s ease-in-out 1.35s both}
+.intro-coeur .trace{fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.intro.joue .trace{animation:trace 1s cubic-bezier(.6,0,.3,1) both}
+@keyframes trace{to{stroke-dashoffset:0}}
+.intro-coeur .plein{fill:currentColor;opacity:0;transform-box:fill-box;transform-origin:center}
+.intro.joue .plein{animation:remplit .45s cubic-bezier(.2,.8,.2,1) .9s both}
+@keyframes remplit{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+@keyframes bat{0%,65%,100%{transform:none}15%{transform:scale(1.14)}30%{transform:scale(.98)}45%{transform:scale(1.08)}}
+.intro-nom{margin:0;font:700 clamp(2.1rem,10vw,2.7rem)/1 var(--f-texte);letter-spacing:-.025em;white-space:nowrap}
+.intro-nom span{display:inline-block;opacity:0}
+.intro.joue .intro-nom span{animation:lettre .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(1.2s + var(--i) * 55ms)}
+@keyframes lettre{from{opacity:0;transform:translateY(12px);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+/* Sortie : le cœur et le prénom s'effacent d'abord, puis le fond noir laisse place à la question */
+.intro.sort{opacity:0;pointer-events:none;transition:opacity .5s ease .25s}
+.intro.sort .intro-contenu{opacity:0;transform:scale(1.04)}
+
+/* Confettis du « Oui » : un canvas plein écran qui laisse passer les touchers */
+.confettis{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:25}
+
+.toast{position:fixed;z-index:20;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:calc(100% - 40px);padding:11px 18px;border-radius:999px;background:var(--texte);color:var(--fond);font-weight:600;font-size:.9rem;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<!-- 0. L'intro : cœur + prénom (toucher pour passer) -->
+<div class="intro" id="intro" aria-hidden="true">
+  <div class="intro-contenu">
+    <svg class="intro-coeur" viewBox="0 0 100 94">
+      <path class="plein" d="M50 22C45 14 38 8 28 8 16 8 6 17 6 30c0 16 14 34 44 56 30-22 44-40 44-56 0-13-10-22-22-22-10 0-17 6-22 14Z"/>
+      <path class="trace" d="M50 86C20 64 6 46 6 30 6 17 16 8 28 8c10 0 17 6 22 14"/>
+      <path class="trace" d="M50 86C80 64 94 46 94 30 94 17 84 8 72 8c-10 0-17 6-22 14"/>
+    </svg>
+    <p class="intro-nom" id="intro-nom"></p>
+  </div>
+</div>
+
+<div class="app">
+  <header class="entete">
+    <span class="marque">Marché de Noël</span>
+    <span id="etape">Question</span>
+  </header>
+
+  <main>
+    <!-- 1. La question -->
+    <section class="ecran" id="e-question">
+      <p class="surtitre" id="surtitre-question">Pour toi</p>
+      <h1 class="titre">Est-ce que tu veux aller au <em>marché de Noël</em> avec moi&#8239;?</h1>
+      <div class="zone-reponse" id="zone-reponse">
+        <button class="btn" id="btn-oui" type="button">Oui</button>
+        <button class="btn btn-contour btn-non" id="btn-non" type="button">Non</button>
+      </div>
+    </section>
+
+    <!-- 2. La date -->
+    <section class="ecran" id="e-date" hidden>
+      <p class="surtitre">Parfait</p>
+      <h2 class="titre">Choisis <em>la date</em>.</h2>
+      <div class="cal">
+        <div class="cal-entete"><span class="cal-mois">Décembre 2026</span><span class="cal-legende"><i></i>aujourd'hui</span></div>
+        <div class="cal-semaine" aria-hidden="true"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+        <div class="cal-grille" id="cal-grille"></div>
+      </div>
+      <p class="commentaire" id="commentaire" aria-live="polite">Touche un jour pour le choisir.</p>
+      <button class="btn btn-large" id="btn-valider" type="button" disabled>Choisis une date</button>
+    </section>
+
+    <!-- 3. La réponse -->
+    <section class="ecran" id="e-fin" hidden>
+      <p class="surtitre">C'est noté</p>
+      <h2 class="titre">À bientôt au <em>marché de Noël</em>.</h2>
+      <div class="date-finale"><small>Date choisie</small><strong id="date-finale"></strong></div>
+      <div class="statut" id="statut" data-etat="envoi" role="status"><span class="indic" aria-hidden="true"></span><span id="statut-texte">Envoi de ta réponse…</span></div>
+      <div class="secours" id="secours" hidden>
+        <p class="texte">Ta réponse n'a pas pu partir toute seule. Envoie-la-moi avec un de ces boutons&nbsp;:</p>
+        <pre class="message" id="message"></pre>
+        <a class="btn btn-large" id="lien-wa" href="https://wa.me/" target="_blank" rel="noopener">Envoyer sur WhatsApp</a>
+        <button class="btn btn-large btn-contour" id="btn-copier" type="button">Copier le message</button>
+        <button class="btn btn-large btn-contour" id="btn-reessayer" type="button">Réessayer l'envoi automatique</button>
+      </div>
+      <button class="lien-discret" id="btn-changer" type="button">Changer de date</button>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+/* ===== Réglages ===== */
+const CONFIG = {
+  elle: "Gwendoline",
+  ntfy: "marche-noel-yyp5s1z0r0e3", // sujet ntfy auquel tu es abonné dans l'appli
+  whatsapp: ""                      // secours : ton numéro au format international sans +, ex. "33612345678"
+};
+
+(() => {
+  "use strict";
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const vibrer = p => { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) { /* rien */ } };
+  const pad = n => String(n).padStart(2, "0");
+  const NB = " ";
+  const typo = s => s.replace(/ ([?!:;»])/g, NB + "$1").replace(/« /g, "«" + NB);
+
+  const JOURS = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+  const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+  const jourNum = d => (d.getDate() === 1 ? "1er" : String(d.getDate()));
+  const dateLongue = d => `${JOURS[d.getDay()]} ${jourNum(d)} ${MOIS[d.getMonth()]}`;
+  const isoJour = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+  const aujourdhui = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
+  const MOUVEMENT_REDUIT = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+  /* ---------- Confettis ---------- */
+  // Même dessin de cœur que l'intro (repère 100 × 94).
+  const COEUR = typeof Path2D === "function" ? new Path2D("M50 22C45 14 38 8 28 8 16 8 6 17 6 30c0 16 14 34 44 56 30-22 44-40 44-56 0-13-10-22-22-22-10 0-17 6-22 14Z") : null;
+  const COULEURS_CONFETTIS = ["#c9ad74", "#e8d3a4", "#e5484d", "#f3f1ed", "#2f7d5b"];
+  function confettis(ox, oy) {
+    if (MOUVEMENT_REDUIT) return;
+    const c = document.createElement("canvas");
+    c.className = "confettis"; c.setAttribute("aria-hidden", "true");
+    document.body.appendChild(c);
+    const ctx = c.getContext("2d");
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const W = window.innerWidth, H = window.innerHeight;
+    c.width = W * dpr; c.height = H * dpr;
+    const parts = [];
+    const ajouter = (x, y, angle, ouverture, n, vMin, vMax) => {
+      for (let i = 0; i < n; i++) {
+        const a = angle + (Math.random() - 0.5) * ouverture, v = vMin + Math.random() * (vMax - vMin);
+        const coeur = COEUR && Math.random() < 0.16;
+        parts.push({
+          x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v,
+          w: coeur ? 11 + Math.random() * 6 : 6 + Math.random() * 6, h: 3 + Math.random() * 4,
+          r: Math.random() * Math.PI * 2, vr: (Math.random() - 0.5) * 0.32,
+          phase: Math.random() * Math.PI * 2,
+          couleur: coeur ? "#e5484d" : COULEURS_CONFETTIS[Math.floor(Math.random() * COULEURS_CONFETTIS.length)],
+          forme: coeur ? "coeur" : (Math.random() < 0.3 ? "rond" : "ruban")
+        });
+      }
+    };
+    // Une gerbe depuis le bouton, puis deux canons depuis les bords bas de l'écran.
+    ajouter(ox, oy, -Math.PI / 2, Math.PI * 1.1, 90, 6, 15);
+    setTimeout(() => {
+      ajouter(-10, H * 0.85, -Math.PI / 3, 0.7, 45, 12, 20);
+      ajouter(W + 10, H * 0.85, -Math.PI * 2 / 3, 0.7, 45, 12, 20);
+    }, 180);
+    const debut = performance.now(), DUREE = 4200;
+    let avant = debut;
+    function image(t) {
+      const dt = Math.min(2.5, (t - avant) / 16.67); avant = t;
+      const age = t - debut;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+      ctx.globalAlpha = age > DUREE - 900 ? Math.max(0, (DUREE - age) / 900) : 1;
+      let visibles = 0;
+      for (const p of parts) {
+        p.vy = Math.min(p.vy + 0.3 * dt, 5.5);
+        p.vx *= Math.pow(0.985, dt);
+        p.x += (p.vx + Math.sin(age / 260 + p.phase) * 0.9) * dt;
+        p.y += p.vy * dt;
+        p.r += p.vr * dt;
+        if (p.y > H + 30) continue;
+        visibles++;
+        ctx.save();
+        ctx.translate(p.x, p.y); ctx.rotate(p.r);
+        ctx.fillStyle = p.couleur;
+        if (p.forme === "coeur") {
+          const s = p.w / 100; ctx.scale(s, s); ctx.translate(-50, -47); ctx.fill(COEUR);
+        } else if (p.forme === "rond") {
+          ctx.beginPath(); ctx.arc(0, 0, p.h * 0.8, 0, Math.PI * 2); ctx.fill();
+        } else {
+          ctx.scale(1, Math.cos(age / 140 + p.phase)); // le ruban qui tourne sur lui-même
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        }
+        ctx.restore();
+      }
+      if (age < DUREE && (visibles > 0 || age < 400)) requestAnimationFrame(image);
+      else c.remove();
+    }
+    requestAnimationFrame(image);
+  }
+
+  const etat = { etape: "question", date: null };
+  const ETIQUETTES = { question: "Question", date: "Date", fin: "Réponse" };
+  const onShow = {};
+
+  function aller(nom) {
+    for (const e of $$(".ecran")) e.hidden = e.id !== "e-" + nom;
+    const ecran = $("#e-" + nom);
+    ecran.classList.remove("entre"); void ecran.offsetWidth; ecran.classList.add("entre");
+    etat.etape = nom;
+    $("#etape").textContent = ETIQUETTES[nom];
+    window.scrollTo(0, 0);
+    if (onShow[nom]) onShow[nom]();
+    const h = ecran.querySelector(".titre");
+    if (h) { h.setAttribute("tabindex", "-1"); try { h.focus({ preventScroll: true }); } catch (e) { /* rien */ } }
+  }
+
+  /* ---------- 1. La question : le bouton Non introuvable ---------- */
+  const zone = $("#zone-reponse"), oui = $("#btn-oui"), non = $("#btn-non");
+  let fuites = 0, derniereFuite = 0, ouiDit = false;
+
+  function placerBoutons() {
+    const Wz = zone.clientWidth, Hz = zone.clientHeight;
+    const wO = oui.offsetWidth, wN = non.offsetWidth, hN = non.offsetHeight;
+    if (fuites === 0) {
+      const total = wO + 14 + wN, x0 = Math.max(0, (Wz - total) / 2);
+      oui.style.left = x0 + "px"; oui.style.top = "40px";
+      non.style.left = x0 + wO + 14 + "px"; non.style.top = "40px";
+    } else {
+      oui.style.left = (Wz - wO) / 2 + "px"; oui.style.top = "40px";
+      const x = Math.min(parseFloat(non.style.left) || 0, Wz - wN);
+      const y = Math.min(parseFloat(non.style.top) || 0, Hz - hN);
+      non.style.left = Math.max(0, x) + "px"; non.style.top = Math.max(0, y) + "px";
+    }
+  }
+  function fuir() {
+    if (performance.now() - derniereFuite < 250) return;
+    fuites++;
+    derniereFuite = performance.now();
+    vibrer(12);
+    const ech = 1 + Math.min(fuites, 8) * 0.08;
+    oui.style.setProperty("--echelle", ech.toFixed(2));
+    const Wz = zone.clientWidth, Hz = zone.clientHeight;
+    const wO = oui.offsetWidth, hO = oui.offsetHeight;
+    const oL = (Wz - wO) / 2, oT = 40;
+    oui.style.left = oL + "px"; oui.style.top = oT + "px";
+    const wN = non.offsetWidth, hN = non.offsetHeight;
+    const cx = oL + wO / 2, cy = oT + hO / 2, m = 14;
+    const bo = { l: cx - (wO * ech) / 2 - m, r: cx + (wO * ech) / 2 + m, t: cy - (hO * ech) / 2 - m, b: cy + (hO * ech) / 2 + m };
+    const curX = parseFloat(non.style.left) || 0, curY = parseFloat(non.style.top) || 0;
+    let choix = null;
+    for (let i = 0; i < 60; i++) {
+      const x = Math.random() * Math.max(0, Wz - wN), y = Math.random() * Math.max(0, Hz - hN);
+      if (x < bo.r && x + wN > bo.l && y < bo.b && y + hN > bo.t) continue;
+      choix = { x, y };
+      if (Math.hypot(x - curX, y - curY) > 100) break;
+    }
+    if (!choix) choix = { x: 0, y: Hz - hN };
+    non.style.left = choix.x + "px"; non.style.top = choix.y + "px";
+  }
+  function direOui() {
+    if (ouiDit) return;
+    ouiDit = true;
+    vibrer([15, 40, 15]);
+    const r = oui.getBoundingClientRect();
+    confettis(r.left + r.width / 2, r.top + r.height / 2);
+    setTimeout(() => aller("date"), MOUVEMENT_REDUIT ? 250 : 800);
+  }
+  non.addEventListener("pointerdown", e => { e.preventDefault(); fuir(); });
+  non.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") fuir(); });
+  non.addEventListener("click", () => { if (performance.now() - derniereFuite >= 700) fuir(); });
+  oui.addEventListener("click", direOui);
+  onShow.question = () => {
+    zone.classList.remove("prete");
+    requestAnimationFrame(() => { placerBoutons(); requestAnimationFrame(() => zone.classList.add("prete")); });
+  };
+  let largeurPrecedente = window.innerWidth;
+  window.addEventListener("resize", () => {
+    if (window.innerWidth !== largeurPrecedente) {
+      largeurPrecedente = window.innerWidth;
+      if (etat.etape === "question") placerBoutons();
+    }
+  });
+
+  /* ---------- 2. La date ---------- */
+  const grille = $("#cal-grille"), commentaire = $("#commentaire"), btnValider = $("#btn-valider");
+  const FIN_MARCHE = new Date(2026, 11, 31);
+
+  function choisirDate(d) {
+    etat.date = d;
+    const cle = isoJour(d);
+    $$(".jour[aria-pressed]", grille).forEach(b => b.setAttribute("aria-pressed", b.dataset.iso === cle ? "true" : "false"));
+    const gras = document.createElement("b");
+    gras.textContent = cap(dateLongue(d));
+    commentaire.replaceChildren(gras);
+    vibrer(8);
+    btnValider.disabled = false;
+    btnValider.textContent = "Valider cette date";
+  }
+  function rendreCalendrier() {
+    grille.replaceChildren();
+    const auj = aujourdhui();
+    for (let i = 0; i < 42; i++) {
+      const d = new Date(2026, 10, 23 + i); // du lundi 23 novembre au dimanche 3 janvier
+      const m = d.getMonth();
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "jour"; b.dataset.iso = isoJour(d);
+      b.innerHTML = `<span>${d.getDate()}</span>` + (m !== 11 ? `<span class="m">${m === 10 ? "nov." : "janv."}</span>` : "");
+      if (+d === +auj) b.classList.add("aujourdhui");
+      const noel = m === 11 && d.getDate() === 25;
+      if (d < auj) {
+        b.classList.add("passe"); b.disabled = true;
+        b.setAttribute("aria-label", `${dateLongue(d)}, déjà passé`);
+      } else if (noel || d > FIN_MARCHE) {
+        b.classList.add("ferme"); b.setAttribute("aria-disabled", "true");
+        b.setAttribute("aria-label", `${dateLongue(d)}, fermé`);
+        b.addEventListener("click", () => {
+          commentaire.textContent = typo(noel ? "Le 25, le marché est fermé." : "En janvier, les chalets sont déjà rangés.");
+          vibrer([8, 30, 8]);
+        });
+      } else {
+        b.setAttribute("aria-pressed", etat.date && isoJour(etat.date) === b.dataset.iso ? "true" : "false");
+        b.setAttribute("aria-label", dateLongue(d));
+        b.addEventListener("click", () => choisirDate(d));
+      }
+      grille.appendChild(b);
+    }
+  }
+  btnValider.addEventListener("click", () => { if (etat.date) aller("fin"); });
+  onShow.date = () => {
+    rendreCalendrier();
+  };
+
+  /* ---------- 3. Envoi automatique de la réponse ---------- */
+  let envois = 0;
+  function setStatut(e, txt) {
+    $("#statut").dataset.etat = e;
+    $("#statut-texte").textContent = typo(txt);
+  }
+  function messageSecours() {
+    let m = `Marché de Noël : c'est oui.\nLe ${dateLongue(etat.date)}.`;
+    if (fuites > 0) m += "\n(Et non, je n'ai pas réussi à cliquer sur « Non ».)";
+    return typo(m);
+  }
+  async function envoyer() {
+    setStatut("envoi", "Envoi de ta réponse…");
+    $("#secours").hidden = true;
+    const titre = envois > 0 ? "Marché de Noël : nouvelle date" : "Marché de Noël : c'est oui";
+    const corps = typo(`Date choisie : ${cap(dateLongue(etat.date))}\nTentatives sur le bouton « Non » : ${fuites}`);
+    const params = new URLSearchParams({ title: titre, tags: "christmas_tree", priority: "high" });
+    const ctrl = new AbortController();
+    const minuteur = setTimeout(() => ctrl.abort(), 12000);
+    try {
+      const r = await fetch(`https://ntfy.sh/${encodeURIComponent(CONFIG.ntfy)}?${params}`, { method: "POST", body: corps, keepalive: true, signal: ctrl.signal });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      envois++;
+      setStatut("ok", "Ta réponse m'a été envoyée.");
+    } catch (e) {
+      setStatut("erreur", "L'envoi automatique n'a pas fonctionné.");
+      const msg = messageSecours();
+      $("#message").textContent = msg;
+      const num = (CONFIG.whatsapp || "").replace(/\D/g, "");
+      $("#lien-wa").href = `https://wa.me/${num}?text=${encodeURIComponent(msg)}`;
+      $("#secours").hidden = false;
+    } finally {
+      clearTimeout(minuteur);
+    }
+  }
+  let toastMinuteur = 0;
+  function toast(txt) {
+    const t = $("#toast");
+    t.textContent = typo(txt); t.hidden = false;
+    clearTimeout(toastMinuteur);
+    toastMinuteur = setTimeout(() => { t.hidden = true; }, 2800);
+  }
+  $("#btn-copier").addEventListener("click", () => {
+    const txt = messageSecours();
+    const ko = () => {
+      const sel = window.getSelection(), range = document.createRange();
+      range.selectNodeContents($("#message"));
+      sel.removeAllRanges(); sel.addRange(range);
+      toast("Texte sélectionné : fais « Copier ».");
+    };
+    try { navigator.clipboard.writeText(txt).then(() => toast("Message copié."), ko); } catch (e) { ko(); }
+  });
+  $("#btn-reessayer").addEventListener("click", envoyer);
+  $("#btn-changer").addEventListener("click", () => aller("date"));
+  onShow.fin = () => {
+    $("#date-finale").textContent = cap(dateLongue(etat.date));
+    vibrer([20, 50, 20]);
+    envoyer();
+  };
+
+  /* ---------- 0. L'intro ---------- */
+  function lancerIntro() {
+    const intro = $("#intro"), nom = $("#intro-nom");
+    const reduit = MOUVEMENT_REDUIT;
+    if (CONFIG.elle) {
+      Array.from(CONFIG.elle).forEach((c, i) => {
+        const s = document.createElement("span");
+        s.textContent = c === " " ? NB : c;
+        s.style.setProperty("--i", i);
+        nom.appendChild(s);
+      });
+    } else nom.remove();
+    for (const p of $$(".trace", intro)) {
+      const L = p.getTotalLength();
+      p.style.strokeDasharray = L; p.style.strokeDashoffset = L;
+    }
+    let fini = false;
+    const finir = () => {
+      if (fini) return;
+      fini = true;
+      intro.classList.add("sort");
+      setTimeout(() => aller("question"), 250);
+      setTimeout(() => intro.remove(), 800);
+    };
+    intro.addEventListener("click", finir);
+    // On attend la police (max 0,7 s) pour que le prénom ne change pas de forme en pleine animation.
+    const police = document.fonts && document.fonts.ready
+      ? Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 700))])
+      : Promise.resolve();
+    police.then(() => requestAnimationFrame(() => {
+      if (fini) return;
+      intro.classList.add("joue");
+      setTimeout(finir, reduit ? 1400 : 3300);
+    }));
+  }
+
+  /* ---------- Démarrage ---------- */
+  if (CONFIG.elle) $("#surtitre-question").textContent = `Pour ${CONFIG.elle}`;
+  onShow.question();
+  lancerIntro();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (etat.etape === "question" && fuites === 0) placerBoutons(); });
+})();
+</script>
+</body>
+</html>
