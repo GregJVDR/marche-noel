@@ -174,7 +174,7 @@ body{margin:0;min-height:100%;background:var(--fond);color:var(--texte);font:16p
     <!-- 1. La question -->
     <section class="ecran" id="e-question">
       <p class="surtitre" id="surtitre-question">Pour toi</p>
-      <h1 class="titre">Est-ce que tu veux aller au <em>marché de Noël</em> avec moi&#8239;?</h1>
+      <h1 class="titre">Tu veux qu'on aille au <em>marché de Noël</em> cet hiver&#8239;?</h1>
       <div class="zone-reponse" id="zone-reponse">
         <button class="btn" id="btn-oui" type="button">Oui</button>
         <button class="btn btn-contour btn-non" id="btn-non" type="button">Non</button>
@@ -202,7 +202,7 @@ body{margin:0;min-height:100%;background:var(--fond);color:var(--texte);font:16p
         <div class="cal-entete"><span class="cal-mois" id="heure-jour"></span><span class="cal-legende"><i></i>nuit tombée</span></div>
         <div class="heures" id="heures" role="group" aria-label="Heures"></div>
       </div>
-      <p class="commentaire" id="commentaire-heure" aria-live="polite">Touche une heure pour la choisir.</p>
+      <p class="commentaire" id="commentaire-heure" aria-live="polite" hidden>Il est trop tard pour aujourd'hui&nbsp;: choisis un autre jour.</p>
       <button class="btn btn-large" id="btn-valider-heure" type="button" disabled>Choisis une heure</button>
       <button class="lien-discret" id="btn-retour-date" type="button">Changer de date</button>
     </section>
@@ -462,10 +462,6 @@ const CONFIG = {
   const HEURES = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
   const NUIT = 17; // en décembre, il fait nuit vers 17 h : les illuminations sont allumées
   const grilleHeures = $("#heures"), commentaireHeure = $("#commentaire-heure"), btnValiderHeure = $("#btn-valider-heure");
-  const motHeure = h => h < 12 ? "Le matin, il y a moins de monde."
-    : h < 14 ? "Parfait pour manger un bout au marché."
-    : h < NUIT ? "L'après-midi, avant la nuit."
-    : "Les illuminations seront allumées.";
 
   function etatBoutonHeure() {
     btnValiderHeure.disabled = etat.heure === null;
@@ -474,9 +470,6 @@ const CONFIG = {
   function choisirHeure(h) {
     etat.heure = h;
     $$(".heure:not(:disabled)", grilleHeures).forEach(b => b.setAttribute("aria-pressed", Number(b.dataset.h) === h ? "true" : "false"));
-    const gras = document.createElement("b");
-    gras.textContent = fmtHeure(h) + ".";
-    commentaireHeure.replaceChildren(gras, " " + typo(motHeure(h)));
     vibrer(8);
     etatBoutonHeure();
   }
@@ -505,7 +498,7 @@ const CONFIG = {
       grilleHeures.appendChild(b);
     }
     if (etat.heure !== null) choisirHeure(etat.heure);
-    else commentaireHeure.textContent = typo(libres ? "Touche une heure pour la choisir." : "Il est trop tard pour aujourd'hui : choisis un autre jour.");
+    commentaireHeure.hidden = libres > 0; // seul message restant : plus aucune heure possible aujourd'hui
     etatBoutonHeure();
   }
   btnValiderHeure.addEventListener("click", () => { if (etat.heure !== null) aller("fin"); });
